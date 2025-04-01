@@ -1,3 +1,5 @@
+(UI)[https://github.com/dRBreslove/IntoMental/blob/main/IMG_0332.jpeg]
+
 # IntoMental: A Collaborative Studio for Sound Design
 
 Welcome to IntoMental, a dynamic studio dedicated to sound design and creative exploration. Our mission is to bridge artistry and technology, crafting immersive auditory experiences that inspire and innovate.

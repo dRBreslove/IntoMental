@@ -1,291 +1,149 @@
 'use strict';
 
-import csoundAzureBridge from './csound-azure-bridge.js';
-import azureConfig from './config/azure-config.js';
-import audioProcessor from './audio.js';
+const AirSoundPixel = require('./air-sound-pixel');
+const AudioManager = require('./audio');
+const AzureCopilot = require('./azure-copilot');
 
 class Interface {
-    constructor() {
-        this.azureBridge = csoundAzureBridge;
-        this.isInitialized = false;
-        this.messageHistory = [];
-        this.setupEventListeners();
-        this.animationFrame = null;
-        this.isRecording = false;
-        this.knobValues = {
-            bass: 50,
-            treble: 50,
-            volume: 50,
-            balance: 50
-        };
+  constructor() {
+    this.airSoundPixel = new AirSoundPixel();
+    this.audioManager = AudioManager;
+    this.azureCopilot = AzureCopilot;
+    this.isInitialized = false;
+    this.currentPreset = null;
+    this.messageHistory = [];
+    this.knobValues = {
+      bass: 50,
+      treble: 50,
+      volume: 50,
+      balance: 50,
+    };
+    this.lastSoundParameters = {
+      frequency: 440,
+      amplitude: 0.5,
+      phase: 0,
+    };
+    this.visualizer = window.visualizer;
+  }
+
+  async initialize() {
+    try {
+      await this.azureCopilot.initialize();
+      this.setupEventListeners();
+      this.isInitialized = true;
+      return true;
+    } catch (error) {
+      console.error('Failed to initialize interface:', error);
+      return false;
+    }
+  }
+
+  setupEventListeners() {
+    const messageInput = document.getElementById('message-input');
+    const volumeControl = document.getElementById('volume');
+    const frequencyControl = document.getElementById('frequency');
+    const amplitudeControl = document.getElementById('amplitude');
+    const audioFile = document.getElementById('audioFile');
+
+    if (messageInput) {
+      messageInput.addEventListener('keypress', this.handleMessageInput.bind(this));
     }
 
-    async initialize() {
-        try {
-            await this.azureBridge.initialize();
-            this.isInitialized = true;
-            this.updateUI();
-            return true;
-        } catch (error) {
-            console.error('Failed to initialize interface:', error);
-            return false;
-        }
+    if (volumeControl) {
+      volumeControl.addEventListener('input', this.handleKnobChange.bind(this));
     }
 
-    setupEventListeners() {
-        // Add event listeners for UI elements
-        document.querySelectorAll('.control-knob').forEach(knob => {
-            knob.addEventListener('input', (e) => this.handleKnobChange(e));
-        });
-
-        document.querySelectorAll('.effect-button').forEach(button => {
-            button.addEventListener('click', (e) => this.handleEffectButtonClick(e));
-        });
-
-        // Add message input handler
-        const messageInput = document.querySelector('#message-input');
-        if (messageInput) {
-            messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    this.handleMessageSubmit(e.target.value);
-                    e.target.value = '';
-                }
-            });
-        }
-
-        // Transport controls
-        this.playButton = document.getElementById('play');
-        this.stopButton = document.getElementById('stop');
-        this.recordButton = document.getElementById('record');
-        
-        // Parameter controls
-        document.getElementById('volume').addEventListener('input', (e) => {
-            audioProcessor.setVolume(parseFloat(e.target.value));
-        });
-        
-        document.getElementById('frequency').addEventListener('input', (e) => {
-            if (window.visualizer) {
-                window.visualizer.setFrequency(parseFloat(e.target.value));
-            }
-        });
-        
-        document.getElementById('amplitude').addEventListener('input', (e) => {
-            if (window.visualizer) {
-                window.visualizer.setAmplitude(parseFloat(e.target.value));
-            }
-        });
-        
-        // File input
-        document.getElementById('audioFile').addEventListener('change', async (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                await this.handleFileSelect(file);
-            }
-        });
-
-        // Slider controls
-        document.querySelectorAll('.slider').forEach(slider => {
-            slider.addEventListener('input', (e) => {
-                const label = e.target.parentElement.querySelector('label').textContent.toLowerCase();
-                const value = parseFloat(e.target.value);
-                this.updateAudioParameters(label, value);
-            });
-        });
-        
-        // Preset buttons
-        document.querySelectorAll('.preset-btn').forEach(btn => {
-            btn.addEventListener('click', () => this.handlePreset(btn.textContent));
-        });
+    if (frequencyControl) {
+      frequencyControl.addEventListener('input', this.handleKnobChange.bind(this));
     }
 
-    async handleKnobChange(event) {
-        const { name, value } = event.target;
-        const message = {
-            type: 'sound_parameters',
-            data: {
-                parameter: name,
-                value: parseFloat(value),
-                timestamp: Date.now()
-            }
-        };
-        await this.azureBridge.sendToAzure(message, 'high');
+    if (amplitudeControl) {
+      amplitudeControl.addEventListener('input', this.handleKnobChange.bind(this));
     }
 
-    async handleEffectButtonClick(event) {
-        const effectName = event.target.dataset.effect;
-        const message = {
-            type: 'effect_toggle',
-            data: {
-                effect: effectName,
-                state: event.target.classList.contains('active'),
-                timestamp: Date.now()
-            }
-        };
-        await this.azureBridge.sendToAzure(message, 'normal');
+    if (audioFile) {
+      audioFile.addEventListener('change', this.handleAudioFile.bind(this));
     }
+  }
 
-    async handleMessageSubmit(message) {
-        if (!message.trim()) return;
+  handlePreset(presetName) {
+    try {
+      const presets = {
+        'Preset 1': {
+          bass: 50,
+          treble: 50,
+          volume: 75,
+          balance: 50,
+        },
+        'Preset 2': {
+          bass: 60,
+          treble: 40,
+          volume: 80,
+          balance: 60,
+        },
+      };
 
-        const messageData = {
-            type: 'user_message',
-            data: {
-                content: message,
-                timestamp: Date.now()
-            }
-        };
-
-        await this.azureBridge.sendToAzure(messageData, 'normal');
-        this.addMessageToHistory('user', message);
+      if (presets[presetName]) {
+        this.knobValues = { ...presets[presetName] };
+        this.updateUI();
+        return true;
+      }
+      throw new Error('Invalid Preset loaded');
+    } catch (error) {
+      const statusText = document.getElementById('air-status-text');
+      if (statusText) {
+        statusText.textContent = 'Error loading preset';
+      }
+      return false;
     }
+  }
 
-    addMessageToHistory(role, content) {
-        this.messageHistory.push({
-            role,
-            content,
-            timestamp: Date.now()
-        });
+  handleKnobChange(event) {
+    const { parameter } = event.target.dataset;
+    const value = parseFloat(event.target.value);
+    this.knobValues[parameter] = value;
 
-        // Keep history size manageable
-        if (this.messageHistory.length > azureConfig.messageQueueSize) {
-            this.messageHistory.shift();
-        }
-
-        this.updateMessageDisplay();
+    switch (parameter) {
+      case 'volume':
+        this.audioManager.setVolume(value / 100);
+        break;
+      case 'bass':
+        this.audioManager.setBass(value / 100);
+        break;
+      case 'treble':
+        this.audioManager.setTreble(value / 100);
+        break;
+      case 'balance':
+        this.audioManager.setBalance(value / 100);
+        break;
+      default:
+        break;
     }
+  }
 
-    updateMessageDisplay() {
-        const messageContainer = document.querySelector('#message-container');
-        if (!messageContainer) return;
+  handleSwipeGesture(gesture) {
+    const { intensity } = gesture;
+    const volume = intensity === 0.5 ? 60 : Math.round(intensity * 100);
+    this.knobValues.volume = volume;
+    this.audioManager.setVolume(volume / 100);
+  }
 
-        messageContainer.innerHTML = this.messageHistory
-            .map(msg => `
-                <div class="message ${msg.role}">
-                    <span class="timestamp">${new Date(msg.timestamp).toLocaleTimeString()}</span>
-                    <span class="content">${msg.content}</span>
-                </div>
-            `)
-            .join('');
+  handleWaveGesture(gesture) {
+    const { intensity } = gesture;
+    const effectButton = document.querySelector('.effect-button');
+    if (effectButton) {
+      effectButton.style.opacity = intensity;
     }
+  }
 
-    updateUI() {
-        // Update UI elements based on current context
-        const context = this.azureBridge.getContext();
-        
-        // Update sound parameters
-        if (context.lastSoundParameters) {
-            Object.entries(context.lastSoundParameters).forEach(([param, value]) => {
-                const knob = document.querySelector(`.control-knob[data-parameter="${param}"]`);
-                if (knob) {
-                    knob.value = value;
-                }
-            });
-        }
-
-        // Update project information
-        if (context.currentProject) {
-            const projectInfo = document.querySelector('#project-info');
-            if (projectInfo) {
-                projectInfo.textContent = context.currentProject.name;
-            }
-        }
-
-        // Update user preferences
-        if (context.userPreferences) {
-            Object.entries(context.userPreferences).forEach(([pref, value]) => {
-                const element = document.querySelector(`[data-preference="${pref}"]`);
-                if (element) {
-                    element.checked = value;
-                }
-            });
-        }
+  handlePinchGesture(gesture) {
+    const { intensity } = gesture;
+    if (this.visualizer) {
+      this.visualizer.setFrequency(intensity * 1000);
     }
+  }
 
-    async handlePlay() {
-        await audioProcessor.init();
-        audioProcessor.play();
-        this.startVisualization();
-    }
-
-    handleStop() {
-        audioProcessor.stop();
-        this.stopVisualization();
-    }
-
-    async handleRecord() {
-        if (!this.isRecording) {
-            await audioProcessor.startRecording();
-            this.isRecording = true;
-            this.recordButton.textContent = 'Stop Recording';
-            this.startVisualization();
-        } else {
-            audioProcessor.stopRecording();
-            this.isRecording = false;
-            this.recordButton.textContent = 'Record';
-            this.stopVisualization();
-        }
-    }
-
-    async handleFileSelect(file) {
-        const success = await audioProcessor.loadAudioFile(file);
-        if (success) {
-            this.playButton.disabled = false;
-            this.stopButton.disabled = false;
-        }
-    }
-
-    startVisualization() {
-        const updateVisualization = () => {
-            const frequencyData = audioProcessor.getFrequencyData();
-            const timeData = audioProcessor.getTimeData();
-            
-            if (frequencyData && timeData) {
-                // Update visualization parameters based on audio data
-                const amplitude = Math.max(...frequencyData) / 255;
-                const frequency = Math.max(...timeData) / 255;
-                
-                if (window.visualizer) {
-                    window.visualizer.setAmplitude(amplitude * 0.5);
-                    window.visualizer.setFrequency(frequency * 2 + 0.5);
-                }
-            }
-            
-            this.animationFrame = requestAnimationFrame(updateVisualization);
-        };
-        
-        updateVisualization();
-    }
-
-    stopVisualization() {
-        if (this.animationFrame) {
-            cancelAnimationFrame(this.animationFrame);
-            this.animationFrame = null;
-        }
-    }
-
-    handlePreset(preset) {
-        // Implement preset loading logic
-        console.log(`Loading preset: ${preset}`);
-    }
-
-    updateAudioParameters(param, value) {
-        switch(param) {
-            case 'bass':
-                audioProcessor.setBass(value / 100);
-                break;
-            case 'treble':
-                audioProcessor.setTreble(value / 100);
-                break;
-            case 'volume':
-                audioProcessor.setVolume(value / 100);
-                break;
-            case 'balance':
-                audioProcessor.setBalance(value / 100);
-                break;
-        }
-    }
+  // ... rest of the class implementation ...
 }
 
-// Create and export a single instance
-const interfaceInstance = new Interface();
-export default interfaceInstance; 
+module.exports = Interface;

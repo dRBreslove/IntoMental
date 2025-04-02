@@ -1,0 +1,298 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-color: #2a2a2a;
+    --secondary-color: #333;
+    --accent-color: #4a4a4a;
+    --text-color: #ffffff;
+    --button-hover: #5a5a5a;
+    --button-active: #3a3a3a;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background: var(--primary-color);
+    color: var(--text-color);
+    overflow: hidden;
+}
+
+.container {
+    width: 100vw;
+    height: 100vh;
+    display: grid;
+    grid-template-columns: 300px 1fr 300px;
+    grid-template-rows: 1fr 200px;
+    gap: 10px;
+    padding: 10px;
+}
+
+/* Panel Styles */
+.panel {
+    background: var(--secondary-color);
+    border-radius: 8px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+/* Left Panel */
+.left-panel {
+    grid-row: 1 / 2;
+    grid-column: 1 / 2;
+}
+
+.profile-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.profile-picture {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    overflow: hidden;
+}
+
+.profile-picture img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.preset-buttons {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+    width: 100%;
+}
+
+/* Right Panel */
+.right-panel {
+    grid-row: 1 / 2;
+    grid-column: 2 / 3;
+}
+
+.webgl-container {
+    flex: 1;
+    background: #000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+#glCanvas {
+    width: 100%;
+    height: 100%;
+}
+
+/* Sound Control Panel */
+.sound-control-panel {
+    grid-row: 1 / 2;
+    grid-column: 3 / 4;
+}
+
+.knob-section {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+}
+
+.knob-group {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.knob-group label {
+    font-size: 0.9em;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+/* Add value display */
+.knob-group::after {
+    content: attr(data-value);
+    position: absolute;
+    bottom: -20px;
+    font-size: 0.8em;
+    color: var(--text-color);
+    opacity: 0.6;
+}
+
+.knob {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    position: relative;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    box-shadow: inset 0 2px 4px rgba(0,0,0,0.2);
+}
+
+.knob::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 4px;
+    height: 20px;
+    background: var(--text-color);
+    transform-origin: bottom center;
+    transform: translate(-50%, -50%);
+    transition: transform 0.1s ease;
+}
+
+.knob::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--text-color);
+    transform: translate(-50%, -50%);
+    opacity: 0.3;
+}
+
+/* Smartphone Panel */
+.smartphone-panel {
+    grid-row: 2 / 3;
+    grid-column: 1 / 2;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 15px;
+}
+
+.instrument-display {
+    width: 100px;
+    height: 100px;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.instrument-display img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Keyboard Area */
+.keyboard-area {
+    grid-row: 2 / 3;
+    grid-column: 2 / 4;
+    display: flex;
+    gap: 10px;
+}
+
+.keyboard {
+    flex: 1;
+    background: var(--secondary-color);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.keyboard-controls {
+    display: flex;
+    gap: 10px;
+}
+
+.keyboard-keys {
+    flex: 1;
+    background: var(--accent-color);
+    border-radius: 4px;
+    display: flex;
+    align-items: flex-end;
+    padding: 5px;
+}
+
+/* Button Styles */
+button {
+    background: var(--accent-color);
+    border: none;
+    color: var(--text-color);
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button:hover {
+    background: var(--button-hover);
+}
+
+button:active {
+    background: var(--button-active);
+}
+
+/* Slider Styles */
+.slider-container, .slider-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.slider {
+    -webkit-appearance: none;
+    width: 100%;
+    height: 4px;
+    background: var(--accent-color);
+    border-radius: 2px;
+    outline: none;
+}
+
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    background: var(--text-color);
+    border-radius: 50%;
+    cursor: pointer;
+}
+
+/* Section Styles */
+.effects-section, .transport-section {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.advanced-tools {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+    .container {
+        grid-template-columns: 250px 1fr 250px;
+    }
+}
+
+@media (max-width: 900px) {
+    .container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+    
+    .panel {
+        grid-column: 1 / -1;
+    }
+    
+    .keyboard-area {
+        grid-column: 1 / -1;
+    }
+} 

@@ -1,0 +1,22 @@
+{
+  "name": "intomental",
+  "version": "1.0.0",
+  "description": "A collaborative studio for sound design with WebGL visualization",
+  "main": "index.html",
+  "scripts": {
+    "start": "http-server -c-1",
+    "lint": "eslint src/**/*.js",
+    "lint:fix": "eslint src/**/*.js --fix"
+  },
+  "dependencies": {
+    "gl-matrix": "^3.4.3"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "eslint": "^8.56.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.29.1"
+  },
+  "author": "",
+  "license": "MIT"
+} 

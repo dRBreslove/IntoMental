@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="150" height="150" viewBox="0 0 150 150" xmlns="http://www.w3.org/2000/svg">
+    <!-- Background -->
+    <circle cx="75" cy="75" r="75" fill="#4a4a4a"/>
+    
+    <!-- Head -->
+    <circle cx="75" cy="60" r="30" fill="#ffffff"/>
+    
+    <!-- Body -->
+    <path d="M75 95 C45 95 25 125 25 150 L125 150 C125 125 105 95 75 95" fill="#ffffff"/>
+    
+    <!-- Headphones -->
+    <path d="M30 60 C30 45 50 35 75 35 C100 35 120 45 120 60" stroke="#333333" stroke-width="8" fill="none"/>
+    <circle cx="30" cy="60" r="15" fill="#333333"/>
+    <circle cx="120" cy="60" r="15" fill="#333333"/>
+</svg> 

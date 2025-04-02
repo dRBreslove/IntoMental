@@ -1,4 +1,12 @@
-(UI)[https://github.com/dRBreslove/IntoMental/blob/main/IMG_0332.jpeg]
+# IntoMental
+
+## Quick Start
+```bash
+npm install    # Install dependencies
+npm run lint   # Check code style
+npm test      # Run tests
+npm start     # Start development server
+```
 
 # IntoMental: A Collaborative Studio for Sound Design
 

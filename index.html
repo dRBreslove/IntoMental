@@ -15,25 +15,36 @@
                     <img src="img/profile.svg" alt="Profile Picture">
                 </div>
                 <div class="preset-buttons">
-                    <button class="preset-btn">Bass</button>
-                    <button class="preset-btn">Drums</button>
-                    <button class="preset-btn">Synth</button>
-                    <button class="preset-btn">Vocals</button>
+                    <button class="preset-btn" data-preset="bass">Bass</button>
+                    <button class="preset-btn" data-preset="drums">Drums</button>
+                    <button class="preset-btn" data-preset="synth">Synth</button>
+                    <button class="preset-btn" data-preset="vocals">Vocals</button>
                 </div>
             </div>
             
             <div class="effects-section">
-                <button class="effect-btn">Reverb</button>
-                <button class="effect-btn">Distortion</button>
-                <button class="effect-btn">Delay</button>
-                <button class="effect-btn">Equalizer</button>
+                <button class="effect-btn" data-effect="reverb">Reverb</button>
+                <button class="effect-btn" data-effect="distortion">Distortion</button>
+                <button class="effect-btn" data-effect="delay">Delay</button>
+                <button class="effect-btn" data-effect="equalizer">Equalizer</button>
+                <button class="effect-btn" data-effect="chorus">Chorus</button>
+                <button class="effect-btn" data-effect="flanger">Flanger</button>
+                <button class="effect-btn" data-effect="compressor">Compressor</button>
+                <button class="effect-btn" data-effect="phaser">Phaser</button>
+                <button class="effect-btn" data-effect="tremolo">Tremolo</button>
+                <button class="effect-btn" data-effect="bitcrusher">Bitcrusher</button>
             </div>
             
             <div class="transport-section">
-                <button class="transport-btn" id="record">Record</button>
+                <input type="file" id="audioFile" accept="audio/*" class="file-input">
                 <button class="transport-btn" id="play">Play</button>
                 <button class="transport-btn" id="stop">Stop</button>
             </div>
+        </div>
+
+        <!-- Center Frame (WebGL Visualization) -->
+        <div class="center-frame">
+            <canvas id="visualizer"></canvas>
         </div>
 
         <!-- Right Panel (Tablet Interface) -->

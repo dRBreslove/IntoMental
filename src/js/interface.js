@@ -1,15 +1,15 @@
 'use strict';
 
-const AirSoundPixel = require('./air-sound-pixel');
-const AudioManager = require('./audio');
-const AzureCopilot = require('./azure-copilot');
-const WebGLVisualizer = require('./webgl');
+import AirSoundPixel from './air-sound-pixel.js';
+import AudioManager from './audio.js';
+import AzureCopilot from './azure-copilot.js';
+import WebGLVisualizer from './webgl.js';
 
 class Interface {
   constructor() {
     this.airSoundPixel = new AirSoundPixel();
-    this.audioManager = AudioManager;
-    this.azureCopilot = AzureCopilot;
+    this.audioManager = new AudioManager();
+    this.azureCopilot = new AzureCopilot();
     this.isInitialized = false;
     this.currentPreset = null;
     this.messageHistory = [];
@@ -29,7 +29,13 @@ class Interface {
     };
     this.visualizer = new WebGLVisualizer();
     this.currentAudioSource = null;
-    this.setupEventListeners();
+
+    // Wait for DOM to be ready before setting up event listeners
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => this.setupEventListeners());
+    } else {
+      this.setupEventListeners();
+    }
   }
 
   async initialize() {
@@ -363,4 +369,4 @@ class Interface {
   // ... rest of the class implementation ...
 }
 
-module.exports = Interface;
+export default Interface;

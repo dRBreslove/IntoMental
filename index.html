@@ -15,10 +15,8 @@
                     <img src="img/profile.svg" alt="Profile Picture">
                 </div>
                 <div class="preset-buttons">
-                    <button class="preset-btn" data-preset="bass">Bass</button>
-                    <button class="preset-btn" data-preset="drums">Drums</button>
-                    <button class="preset-btn" data-preset="synth">Synth</button>
-                    <button class="preset-btn" data-preset="vocals">Vocals</button>
+                    <button class="preset-btn" data-preset="Preset 1">Preset 1</button>
+                    <button class="preset-btn" data-preset="Preset 2">Preset 2</button>
                 </div>
             </div>
             
@@ -30,9 +28,6 @@
                 <button class="effect-btn" data-effect="chorus">Chorus</button>
                 <button class="effect-btn" data-effect="flanger">Flanger</button>
                 <button class="effect-btn" data-effect="compressor">Compressor</button>
-                <button class="effect-btn" data-effect="phaser">Phaser</button>
-                <button class="effect-btn" data-effect="tremolo">Tremolo</button>
-                <button class="effect-btn" data-effect="bitcrusher">Bitcrusher</button>
             </div>
             
             <div class="transport-section">
@@ -87,38 +82,30 @@
             <div class="knob-section">
                 <div class="knob-group">
                     <label>Bass</label>
-                    <div class="knob"></div>
+                    <input type="range" id="bass" class="knob" min="0" max="100" value="50" data-parameter="bass">
                 </div>
                 <div class="knob-group">
                     <label>Treble</label>
-                    <div class="knob"></div>
+                    <input type="range" id="treble" class="knob" min="0" max="100" value="50" data-parameter="treble">
                 </div>
                 <div class="knob-group">
                     <label>Volume</label>
-                    <div class="knob"></div>
+                    <input type="range" id="volume" class="knob" min="0" max="100" value="50" data-parameter="volume">
                 </div>
                 <div class="knob-group">
                     <label>Balance</label>
-                    <div class="knob"></div>
+                    <input type="range" id="balance" class="knob" min="0" max="100" value="50" data-parameter="balance">
                 </div>
             </div>
             
             <div class="slider-section">
                 <div class="slider-group">
                     <label>Frequency</label>
-                    <input type="range" class="slider" min="0" max="100" value="50">
+                    <input type="range" id="frequency" class="slider" min="0" max="100" value="50" data-parameter="frequency">
                 </div>
                 <div class="slider-group">
-                    <label>Resonance</label>
-                    <input type="range" class="slider" min="0" max="100" value="50">
-                </div>
-                <div class="slider-group">
-                    <label>Attack</label>
-                    <input type="range" class="slider" min="0" max="100" value="50">
-                </div>
-                <div class="slider-group">
-                    <label>Release</label>
-                    <input type="range" class="slider" min="0" max="100" value="50">
+                    <label>Amplitude</label>
+                    <input type="range" id="amplitude" class="slider" min="0" max="100" value="50" data-parameter="amplitude">
                 </div>
             </div>
             
@@ -155,5 +142,12 @@
     <script src="src/js/webgl.js" type="module"></script>
     <script src="src/js/audio.js" type="module"></script>
     <script src="src/js/interface.js" type="module"></script>
+    <script type="module">
+        import Interface from './src/js/interface.js';
+        window.addEventListener('DOMContentLoaded', () => {
+            window.interface = new Interface();
+            window.interface.initialize();
+        });
+    </script>
 </body>
 </html> 
